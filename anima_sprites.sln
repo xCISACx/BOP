@@ -1,0 +1,35 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Visual Studio 2010
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "anima_sprites", "Assembly-CSharp.csproj", "{9192B57F-0CE8-5742-F538-BFD45A9EFCA3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "anima_sprites", "Assembly-CSharp-firstpass.csproj", "{6C4B084F-969F-3BF5-28DC-86E7A371FF51}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "anima_sprites", "Assembly-CSharp-Editor-firstpass.csproj", "{8F0419BE-3F55-B488-58D4-E969AF8CDD0C}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{9192B57F-0CE8-5742-F538-BFD45A9EFCA3}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9192B57F-0CE8-5742-F538-BFD45A9EFCA3}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9192B57F-0CE8-5742-F538-BFD45A9EFCA3}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9192B57F-0CE8-5742-F538-BFD45A9EFCA3}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C4B084F-969F-3BF5-28DC-86E7A371FF51}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C4B084F-969F-3BF5-28DC-86E7A371FF51}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C4B084F-969F-3BF5-28DC-86E7A371FF51}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C4B084F-969F-3BF5-28DC-86E7A371FF51}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8F0419BE-3F55-B488-58D4-E969AF8CDD0C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8F0419BE-3F55-B488-58D4-E969AF8CDD0C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8F0419BE-3F55-B488-58D4-E969AF8CDD0C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8F0419BE-3F55-B488-58D4-E969AF8CDD0C}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(MonoDevelopProperties) = preSolution
+		StartupItem = Assembly-CSharp.csproj
+	EndGlobalSection
+EndGlobal
