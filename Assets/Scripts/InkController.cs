@@ -6,10 +6,19 @@ public class InkController : MonoBehaviour
 {
 
 	public float speed;
+	public PlayerControllerArrows player;
 
 	// Use this for initialization
-	void Start () {
-		
+	void Start ()
+	{
+
+		player = FindObjectOfType<PlayerControllerArrows>();
+
+		if (player.transform.localScale.x < 0)
+		{
+			speed = -speed;
+		}
+
 	}
 	
 	// Update is called once per frame

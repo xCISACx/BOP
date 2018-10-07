@@ -6,8 +6,8 @@ public class PlayerController : MonoBehaviour {
 
 	public Transform firePoint;
 	public LayerMask notToHit;
-	public GameObject inkPrefab;
-	public GameObject meh;
+	public GameObject ballPrefab;
+	public GameObject ball;
 	public float shootingSpeed = 1;
 	public Vector2 velocity;
 
@@ -142,7 +142,7 @@ public class PlayerController : MonoBehaviour {
 	{
 		Debug.Log("Shooting");
 		firePoint = transform.Find("FirePoint");
-		GameObject ink = (GameObject)Instantiate(meh,(Vector2)firePoint.transform.position, Quaternion.identity);
-		ink.GetComponent<Rigidbody2D>().velocity = new Vector2(velocity.x, velocity.y);
+		GameObject ball2 = (GameObject)Instantiate(ball,(Vector2)firePoint.transform.position, Quaternion.identity);
+		ball.GetComponent<Rigidbody2D>().velocity = new Vector2(velocity.x, velocity.y);
 	}
 }
