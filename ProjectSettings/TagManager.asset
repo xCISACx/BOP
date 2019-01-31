@@ -3,12 +3,7 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags:
-  - Enemy
-  - Floor
-  - Projectile
-  - Ground
-  - ink
+  tags: []
   layers:
   - Default
   - TransparentFX
@@ -18,10 +13,10 @@ TagManager:
   - UI
   - 
   - 
-  - Enemy
-  - Projectile
-  - Player
-  - Ground
+  - 
+  - 
+  - 
+  - 
   - 
   - 
   - 
