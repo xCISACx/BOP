@@ -12,18 +12,18 @@ public class CameraScript : MonoBehaviour
     // Use this for initialization
     void Start()
     {
-
+        Target = GameObject.FindGameObjectWithTag("Player");
     }
 
     // Update is called once per frame
     void FixedUpdate()
     {
+        Target = GameObject.FindGameObjectWithTag("Player");
         if (Target == null)
         {
             return;
         }
 
-        //A ideia � termos uma camera que vai tentar reduzir a dist�ncia  entre o Mario e ela de uma forma vari�vel consoante a curva de movimento definida.
         var delta = Target.transform.position - transform.position;
         var distance = Vector3.Distance(Target.transform.position, transform.position);
         transform.position = Vector3.MoveTowards(transform.position, transform.position + delta * DeltaXDistance.Evaluate(distance), distance);

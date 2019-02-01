@@ -1,0 +1,81 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1001 &100100000
+Prefab:
+  m_ObjectHideFlags: 1
+  serializedVersion: 2
+  m_Modification:
+    m_TransformParent: {fileID: 0}
+    m_Modifications: []
+    m_RemovedComponents: []
+  m_SourcePrefab: {fileID: 0}
+  m_RootGameObject: {fileID: 1738392372182984}
+  m_IsPrefabAsset: 1
+--- !u!1 &1738392372182984
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 4880991284591802}
+  - component: {fileID: 114409592545308040}
+  - component: {fileID: 114329691911978944}
+  m_Layer: 0
+  m_Name: SpawnPoint
+  m_TagString: Untagged
+  m_Icon: {fileID: 2974397684917235467, guid: 0000000000000000d000000000000000, type: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &4880991284591802
+Transform:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1738392372182984}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -19.13, y: -0.62, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 0
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &114329691911978944
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1738392372182984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f37367f883c05548bc66fe8d6b60631, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnInk: {fileID: 0}
+  bouncyAmmoBottlePrefab: {fileID: 1951289643424052, guid: 5ffdbec655313964e8bdf82b3d61ca55,
+    type: 2}
+  speedyAmmoBottlePrefab: {fileID: 1396619643128898, guid: 8e674cd97a29fa646bb90cbad9ec3fed,
+    type: 2}
+  stickyAmmoBottlePrefab: {fileID: 1390205774773286, guid: 5a867d75608ba2e42ac318b3c509bf51,
+    type: 2}
+  clearAmmoBottlePrefab: {fileID: 1092778667061954, guid: 1c6df63356d168e418cdb68e08870284,
+    type: 2}
+  offsetY: {x: 0, y: 0.5, z: 0}
+--- !u!114 &114409592545308040
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1738392372182984}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b0822de5ce255554a9980941324131ea, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnCooldown: 5
+  spawnpointsParent: {fileID: 0}
+  enemyPrefab: {fileID: 1783564496363834, guid: 1b35399c1170b9649a80427ba118e67a,
+    type: 2}
+  timer: 0
+  enemySpawnType: 1
