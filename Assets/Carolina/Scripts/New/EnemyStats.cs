@@ -102,6 +102,14 @@ public class EnemyStats : MonoBehaviour
 		}
 	}
 	
+	private void OnTriggerEnter2D(Collider2D other)
+	{
+		if (other.gameObject.CompareTag("Acid"))
+		{
+			Destroy(gameObject);
+		}
+	}
+	
 	/*private void OnGUI()
 	{
 		GUI.DrawTexture(new Rect(gameObject.transform.position.x,gameObject.transform.position.y + 20,16,16), HPTickTexture);

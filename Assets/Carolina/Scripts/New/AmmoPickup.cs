@@ -7,6 +7,7 @@ public class AmmoPickup : MonoBehaviour
 
 	public SpawnInk spawnInk;
 	public PlayerBehaviour playerBehaviour;
+	public AmmoBehaviour ammoBehaviour;
 
 	// Use this for initialization
 	void Start () 
@@ -14,6 +15,7 @@ public class AmmoPickup : MonoBehaviour
 		playerBehaviour = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerBehaviour>();
 		if (playerBehaviour.uiActive)
 			spawnInk = GameObject.Find("InkSpray").GetComponent<SpawnInk>();
+		ammoBehaviour = FindObjectOfType<AmmoBehaviour>();
 	}
 	
 	// Update is called once per frame
@@ -29,22 +31,22 @@ public class AmmoPickup : MonoBehaviour
 		//gameObject.SetActive(false);
 		if (other.CompareTag("Bouncy Ammo"))
 		{
-			playerBehaviour.currentBouncyAmmo += 5;
+			ammoBehaviour.currentBouncyAmmo += 5;
 			Destroy(other.gameObject);
 		}
 		if(other.CompareTag("Speedy Ammo"))
 		{
-			playerBehaviour.currentSpeedyAmmo += 5;
+			ammoBehaviour.currentSpeedyAmmo += 5;
 			Destroy(other.gameObject);
 		}
 		if(other.CompareTag("Sticky Ammo"))
 		{
-			playerBehaviour.currentStickyAmmo += 5;
+			ammoBehaviour.currentStickyAmmo += 5;
 			Destroy(other.gameObject);
 		}
 		if(other.CompareTag("Clear Ammo"))
 		{
-			playerBehaviour.currentClearAmmo += 5;
+			ammoBehaviour.currentClearAmmo += 5;
 			Destroy(other.gameObject);
 		}
 	}

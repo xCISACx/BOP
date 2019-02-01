@@ -20,7 +20,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4165434111106460}
   - component: {fileID: 212719159538676678}
-  - component: {fileID: 114626012449644254}
+  - component: {fileID: 114303674120380598}
   - component: {fileID: 50013127053181802}
   - component: {fileID: 61080859192690590}
   m_Layer: 0
@@ -88,7 +88,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 1.28, y: 1.28}
   m_EdgeRadius: 0
---- !u!114 &114626012449644254
+--- !u!114 &114303674120380598
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_CorrespondingSourceObject: {fileID: 0}
@@ -96,18 +96,18 @@ MonoBehaviour:
   m_GameObject: {fileID: 1135244724382602}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: c036db2f526277e428ccf8cb86a74167, type: 3}
+  m_Script: {fileID: 11500000, guid: 9394707b4ddd4234885d9b82cf8423f0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  FB: {fileID: 0}
-  gunStandInstance: {fileID: 1135244724382602}
+  gunStandInstance: {fileID: 0}
   player: {fileID: 0}
   BedroomDoorTilemap: {fileID: 0}
   UI: {fileID: 0}
-  IB: {fileID: 0}
-  PS: {fileID: 0}
+  spawnInk: {fileID: 0}
+  gameManager: {fileID: 0}
   GunObtainedCanvas: {fileID: 0}
   PlayerFirePoint: {fileID: 0}
+  playerBehaviour: {fileID: 0}
 --- !u!212 &212719159538676678
 SpriteRenderer:
   m_ObjectHideFlags: 1
@@ -151,6 +151,6 @@ SpriteRenderer:
   m_Size: {x: 1.28, y: 1.28}
   m_AdaptiveModeThreshold: 0.5
   m_SpriteTileMode: 0
-  m_WasSpriteAssigned: 1
+  m_WasSpriteAssigned: 0
   m_MaskInteraction: 0
   m_SpriteSortPoint: 0

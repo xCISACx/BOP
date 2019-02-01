@@ -20,7 +20,6 @@ public class PlayerBehaviour : MonoBehaviour {
     [SerializeField] SpriteRenderer spritePlayer;
 
     [Header("Aiming")] 
-    public bool playerHasGun;
     [SerializeField] Transform AimRotationalPivot;
     [SerializeField] GameObject WeaponArm;
     [SerializeField] GameObject aimTarget;
@@ -39,45 +38,27 @@ public class PlayerBehaviour : MonoBehaviour {
     public bool isGrounded = true;
     public int jumpingAnimationCounter;
     Vector3 playerScale;
-    public SpawnInk SI;
+    public SpawnInk spawnInk;
     private bool _jumped;
     Vector3 mousePos;
     Ray ray;    
     RaycastHit2D hit;
     public GameManager gameManager;
+    public AmmoBehaviour ammoBehaviour;
     
     public bool touchingWall;
     public bool facingRight;
     [SerializeField] private Transform wallCheck;
+    //public Transform stickyCheck;
+    public CircleCollider2D wallCheckCollider;
+    //public Collider2D stickyCheckCollider;
+    public TilemapCollider2D wallsCollider;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask layerGround;
     [SerializeField] private LayerMask layerWall;
+    //[SerializeField] private LayerMask stickyPuddle;
     [SerializeField] private Vector2 playerWallJumpPower;
     public bool touchingSticky;
-
-    public bool canReduceAmmo = true;
-    public float ammoSpendingCooldownTime;
-    
-    [Header("Ammo")]
-    public int bouncyAmmoPercent = 1;
-    public int speedyAmmoPercent = 1;
-    public int stickyAmmoPercent = 1;
-    public int clearAmmoPercent = 1;
-	
-    public int currentBouncyAmmo = 20;
-    public int currentSpeedyAmmo = 20;
-    public int currentStickyAmmo = 20;
-    public int currentClearAmmo = 20;
-	
-    public int initialBouncyAmmo = 5;
-    public int initialSpeedyAmmo = 5;
-    public int initialStickyAmmo = 5;
-    public int initialClearAmmo = 5;
-	
-    public int maxBouncyAmmo = 20;
-    public int maxSpeedyAmmo = 20;
-    public int maxStickyAmmo = 20;
-    public int maxClearAmmo = 20;
     
     [Header("UI")]
     public GameObject mainUI;
@@ -85,17 +66,16 @@ public class PlayerBehaviour : MonoBehaviour {
     
     void Start ()
     {
+        Time.timeScale = 1;
         if (mainUI == null)
             mainUI = GameObject.FindGameObjectWithTag("UI");
         UICheck();
-        canReduceAmmo = true;
         playerScale = Player.transform.lossyScale;
         anim = GetComponent<Animator>();
-        if (uiActive)
-            SI = GameObject.Find("InkSpray").GetComponent<SpawnInk>();
         Player = GameObject.FindGameObjectWithTag("Player");
         gameManager = GameObject.FindGameObjectWithTag("GM").GetComponent<GameManager>();
         groundCheck = GameObject.Find("Ground Check").transform;
+        ammoBehaviour = FindObjectOfType<AmmoBehaviour>();
     }
     
     private void Awake()
@@ -105,6 +85,10 @@ public class PlayerBehaviour : MonoBehaviour {
 	
 	void Update () 
 	{
+	    UICheck();
+	    if (uiActive)
+	        spawnInk = FindObjectOfType<SpawnInk>();
+	    
 	    Player = GameObject.FindGameObjectWithTag("Player");
 	    groundCheck = GameObject.Find("Ground Check").transform;
 	    if (groundCheck == null)
@@ -112,15 +96,15 @@ public class PlayerBehaviour : MonoBehaviour {
 	        Debug.Log("Ground Check not found");
 	    }
 	    isGrounded = Physics2D.Linecast(transform.position, groundCheck.position, layerGround);
-	    if (uiActive)
-	    {
-	        
-	    }
         Aiming();
-	    AmmoLimiter();
+	    ammoBehaviour.AmmoLimiter();
 	    if (Input.GetKeyDown(KeyCode.Space))
 	        _jumped = true;
 	    WallJumping();
+	    if (touchingSticky)
+	    {
+	        PlayerMovement(false);
+	    }
 	}
 
     void FixedUpdate()
@@ -131,16 +115,17 @@ public class PlayerBehaviour : MonoBehaviour {
         {
             Debug.Log("Ground Check not found");
         }
-        touchingWall = Physics2D.Linecast(transform.position, wallCheck.position, layerWall);
+        //touchingWall = Physics2D.Linecast(transform.position, wallCheck.position, layerWall); //TODO: Fix the wall jumping mechanic.
+        touchingWall = wallCheckCollider.IsTouchingLayers(layerWall);
+        //touchingSticky = Physics2D.Linecast(transform.position, stickyCheck.position, stickyPuddle);
+        //touchingSticky = stickyCheckCollider.IsTouchingLayers(stickyPuddle);
         isGrounded = Physics2D.Linecast(transform.position, groundCheck.position, layerGround);
+        anim.SetBool("can run", true);
         PlayerMovement(true);
     }
     
     void PlayerMovement(bool isEnabled)
     {
-
-        // spritePlayer.flipX = true;
-
         if (isEnabled)
         {
             horAxis = Input.GetAxis("Horizontal");
@@ -150,24 +135,26 @@ public class PlayerBehaviour : MonoBehaviour {
 
             if (horAxis > 0)
             {
-                Player.transform.localScale = new Vector3(playerScale.x, playerScale.y, playerScale.z); //spritePlayer.flipX = true;
+                Player.transform.localScale = new Vector3(playerScale.x, playerScale.y, playerScale.z); //if the player is facing right, the x scale is positive
                 facingRight = true;
             }
             else if (horAxis < 0)
             {
-                Player.transform.localScale = new Vector3(-playerScale.x, playerScale.y, playerScale.z); // spritePlayer.flipX = false;
+                Player.transform.localScale = new Vector3(-playerScale.x, playerScale.y, playerScale.z); //if the player is NOT facing right, the x scale is negative
                 facingRight = false;
             }
             
             
             if (horAxis < 0.05 || horAxis > -0.05)
             {
-                anim.SetFloat("speed", 0);
+                //anim.SetFloat("speed", 0);
+                anim.SetBool("running", false);
             }
 
             if (horAxis > 0.05 || horAxis < -0.05)
             {
-                anim.SetFloat("speed", 1);
+                //anim.SetFloat("speed", 1);
+                anim.SetBool("running", true);
             }
             
             if (_jumped)
@@ -176,31 +163,22 @@ public class PlayerBehaviour : MonoBehaviour {
                 _jumped = false;
             }
         }
-
-        
     }
 
     void Aiming ()
     {
         if (Input.GetMouseButton(0))
         {
-            NoAmmo();
-            SpendAmmo(1);
-            Debug.Log("Spending ammo...");
+            if (!gameManager.playerHasGun) return;
+            
+            ammoBehaviour.NoAmmo();
+            ammoBehaviour.SpendAmmo(1);
+            //Debug.Log("Spending ammo...");
             var em = Nozzle.emission;
             em.enabled = true;
             
             Vector2 mousePos = Camera.main.ScreenToViewportPoint(Input.mousePosition);
-
-            //Debug.Log("Angle: " + angle);
-
             Vector3 axis = new Vector3(0, 0, 1);
-
-            //Vector3 lookAtPos = Vector3.zero;
-            //lookAtPos.z = aimTarget.transform.position.y;
-
-           // WeaponArm.transform.RotateAround(AimRotationalPivot.position, axis, angle);
-            //WeaponArm.transform.LookAt(lookAtPos);
         }
         else
         {
@@ -214,7 +192,7 @@ public class PlayerBehaviour : MonoBehaviour {
         if (isGrounded)
         {
             rb.AddForce(playerJumpPower, ForceMode2D.Impulse);
-            anim.SetInteger("State", 5);
+            anim.SetBool("jumping", true);
             Debug.Log("Playing jumping animation.");
             isGrounded = false;
         }
@@ -225,9 +203,9 @@ public class PlayerBehaviour : MonoBehaviour {
 
         if (other.gameObject.CompareTag("Puddle") || other.gameObject.layer.ToString() == "Puddle")
         {
-            if (other.gameObject.GetComponent<BoxCollider2D>().sharedMaterial == SI.SpeedyMaterial)
+            if (other.gameObject.GetComponent<BoxCollider2D>().sharedMaterial == spawnInk.SpeedyMaterial)
             {
-                anim.SetInteger("State", 6);
+                anim.SetBool("sliding", true);
                 rb.drag = 0;
                 moveSpeed *= VelocityIncrease;
                 if (moveSpeed > SpeedLimit)
@@ -236,10 +214,10 @@ public class PlayerBehaviour : MonoBehaviour {
                 }
             }
         }
-        
+
         if (other.gameObject.CompareTag("Puddle") || other.gameObject.layer.ToString() == "Puddle")
         {
-            if (other.gameObject.GetComponent<BoxCollider2D>().sharedMaterial == SI.StickyMaterial)
+            if (other.gameObject.GetComponent<BoxCollider2D>().sharedMaterial == spawnInk.StickyMaterial)
             {
                 touchingSticky = true;
             }
@@ -251,38 +229,29 @@ public class PlayerBehaviour : MonoBehaviour {
         if (other.gameObject.CompareTag("Ground") || other.gameObject.layer.ToString() == "Ground")
         {
             isGrounded = true;
-            
-            anim.SetInteger("State", 0);
+            anim.SetBool("sliding", false);
+            anim.SetBool("jumping", false);
             rb.drag = 0.0f;
-            Debug.Log("Landed on the ground.");
-            Debug.Log("Not touching the speedy ink");
             moveSpeed = defaultPlayerSpeed;
 
-            if (other.gameObject.GetComponent<TilemapCollider2D>().sharedMaterial != SI.BouncyMaterial)
+            if (other.gameObject.GetComponent<TilemapCollider2D>().sharedMaterial != spawnInk.BouncyMaterial)
             {
                 rb.drag = 0.5f;
             }
         }
-        
-        /*if (other.gameObject.CompareTag("Ground") || other.gameObject.layer.ToString() == "Ground" || other.gameObject.CompareTag("Puddle") || other.gameObject.layer.ToString() == "Puddle")
-        {
-              
-            isGrounded = true;
-            //Debug.Log("Player is grounded.");
-            //anim.SetInteger("State", 0);
-            //Debug.Log("Stopped jumping.");
-            
-        }
-        //else
-        {
-            isGrounded = false;
-            Debug.Log("Player is NOT grounded.");
-        }*/
     }
 
     private void OnCollisionExit2D(Collision2D other)
     {
-        touchingSticky = false;
+        if (other.gameObject.CompareTag("Puddle") || other.gameObject.layer.ToString() == "Puddle")
+        {
+            if (other.gameObject.GetComponent<BoxCollider2D>().sharedMaterial == spawnInk.StickyMaterial)
+            {
+                //anim.SetBool("grabbing wall", false);
+                touchingSticky = false;
+                //rb.gravityScale = 9.8f;
+            }
+        }
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -293,22 +262,14 @@ public class PlayerBehaviour : MonoBehaviour {
             gameManager.KillPlayer();
         }
     }
-    
-    private void OnTriggerExit2D(Collider2D other)
-    {
-    }
-    
-    private void OnTriggerStay2D(Collider2D other)
-    {
-    }
 
     public void onHover(Ray ray, RaycastHit2D hit)
     {
         if(hit.collider == null)
         {
             Debug.Log("nothing hit");
-
-        }            
+        }      
+        
         if (Physics2D.Raycast(ray.origin, ray.direction, Mathf.Infinity))
         {
             print(hit.collider.name);
@@ -317,26 +278,35 @@ public class PlayerBehaviour : MonoBehaviour {
 
     void WallJumping()
     {
-        if (touchingWall && touchingSticky)
+        if (touchingWall && touchingSticky) //TODO: The animation won't work correctly because we can't detect if the player is touching the sticky ink correctly as the puddles don't spawn on the edge of the wall.
         {
-            float slidingVelocity = -1f;
-            //rb.velocity = (new Vector2(slidingVelocity, 0f));
+            
+            //anim.SetBool("can run", false);
+            //anim.SetBool("grabbing wall", true);
+            //anim.SetBool("jumping", false);
+            //anim.SetBool("running", false);
+            //float slidingVelocity = -1f;
+            //rb.gravityScale = 0;
+            //Debug.Log("changed sliding velocity");
+            //rb.velocity = new Vector2(rb.velocity.x, slidingVelocity);
+            //Debug.Log(rb.velocity);
+            //rb.gravityScale = -1f; //new mechanic?
 
-            Debug.Log("Stage1: touching sticky wall, sliding down");
-            if ((horAxis > 0.0f && facingRight && !isGrounded) || (horAxis < 0.0f && !facingRight && !isGrounded))
+            //Debug.Log("Stage1: touching sticky wall, sliding down");
+            if ((horAxis > 0.05f && facingRight && !isGrounded) || (horAxis < -0.05f && !facingRight && isGrounded))
             {
+                
                 if (Input.GetKeyDown(KeyCode.Space))
                 {
                     if (facingRight)
                     {
-                        Debug.Log("Wall jumping to the left");
+                        //Debug.Log("Wall jumping to the left");
                         rb.AddForce(playerWallJumpPower, ForceMode2D.Force);
-                        //Player.transform.localScale = new Vector3(-playerScale.x, playerScale.y, playerScale.z);
+                        //Player.transform.localScale = new Vector3(-playerScale.x, playerScale.y, playerScale.z); //TODO: flip player automatically after they wall jump.
                     }
                     else
                     {
-                        Debug.Log("Wall jumping to the right");
-                        //playerWallJumpPower.x = -playerWallJumpPower.x;
+                        //Debug.Log("Wall jumping to the right");
                         rb.AddForce( new Vector2(-playerWallJumpPower.x,playerWallJumpPower.y), ForceMode2D.Force);
                         //Player.transform.localScale = new Vector3(playerScale.x, playerScale.y, playerScale.z);
                     }
@@ -345,114 +315,13 @@ public class PlayerBehaviour : MonoBehaviour {
         }
     }
     
-    public void SpendAmmo(int ammo)
-    {
-        switch (SI.ammoType)
-        {
-            case SpawnInk.AmmoType.Bouncy:
-                if (canReduceAmmo)
-                {
-                    currentBouncyAmmo -= ammo;
-                    if (currentBouncyAmmo != 0)
-                    {
-                        gameManager.ReduceAmmoBar();   
-                    }
-                    StartCoroutine(JustSpentAmmo());
-                }
-                break;
-            case SpawnInk.AmmoType.Speedy:
-                if (canReduceAmmo)
-                {
-                    currentSpeedyAmmo -= ammo;
-                    if (currentSpeedyAmmo != 0)
-                    {
-                        gameManager.ReduceAmmoBar();   
-                    }
-                    StartCoroutine(JustSpentAmmo());
-                }
-                break;
-            case SpawnInk.AmmoType.Sticky:
-                if (canReduceAmmo)
-                {
-                    currentStickyAmmo -= ammo;
-                    if (currentStickyAmmo != 0)
-                    {
-                        gameManager.ReduceAmmoBar();   
-                    }
-                    StartCoroutine(JustSpentAmmo());
-                }
-                break;
-            case SpawnInk.AmmoType.Clear:
-                if (canReduceAmmo)
-                {
-                    currentClearAmmo -= ammo;
-                    if (currentClearAmmo != 0)
-                    {
-                        gameManager.ReduceAmmoBar();   
-                    }
-                    StartCoroutine(JustSpentAmmo());
-                }
-                break;
-        }
-    }
-						
-    IEnumerator JustSpentAmmo()
-    {
-        canReduceAmmo = false;
-        yield return new WaitForSeconds(ammoSpendingCooldownTime);
-        canReduceAmmo = true;
-    }
-
-    public void AmmoLimiter()
-    {
-        if (currentBouncyAmmo < 0)
-            currentBouncyAmmo = 0;
-        if (currentSpeedyAmmo < 0)
-            currentSpeedyAmmo = 0;
-        if (currentStickyAmmo < 0)
-            currentStickyAmmo = 0;
-        if (currentClearAmmo < 0)
-            currentClearAmmo = 0;
-        if (currentBouncyAmmo > maxBouncyAmmo)
-            currentBouncyAmmo = maxBouncyAmmo;
-        if (currentSpeedyAmmo > maxBouncyAmmo)
-            currentSpeedyAmmo = maxBouncyAmmo;
-        if (currentStickyAmmo > maxBouncyAmmo)
-            currentStickyAmmo = maxBouncyAmmo;
-        if (currentClearAmmo > maxBouncyAmmo)
-            currentClearAmmo = maxBouncyAmmo;
-    }
-
-    public void NoAmmo()
-    {
-        if (currentBouncyAmmo == 0)
-        {
-            Debug.Log("No bouncy ammo left");
-            return;
-        }
-        if (currentSpeedyAmmo == 0)
-        {
-            Debug.Log("No speedy ammo left");
-            return;
-        }
-        if (currentStickyAmmo == 0)
-        {
-            Debug.Log("No sticky ammo left");
-            return;
-        }
-        if (currentClearAmmo == 0)
-        {
-            Debug.Log("No clear ammo left");
-            return;
-            
-        }
-    }    
     void UICheck()
     {
         if (uiActive)
         {
             mainUI.SetActive(true);
         }
+        
         else
         {
             mainUI.SetActive(false);

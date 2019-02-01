@@ -64,7 +64,7 @@ Rigidbody2D:
   m_Interpolate: 0
   m_SleepingMode: 1
   m_CollisionDetection: 0
-  m_Constraints: 0
+  m_Constraints: 4
 --- !u!61 &61200717865414392
 BoxCollider2D:
   m_ObjectHideFlags: 1
@@ -124,7 +124,9 @@ MonoBehaviour:
   spawnAmmo: {fileID: 0}
   canBeDamaged: 1
   invulTime: 2
+  spawner: {fileID: 0}
   HPTickTexture: {fileID: 2800000, guid: ee874109ca334dd4a86c241301958454, type: 3}
+  type: 0
 --- !u!114 &114866544486666802
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -136,7 +138,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f37367f883c05548bc66fe8d6b60631, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  spawnInk: {fileID: 0}
+  enemyStats: {fileID: 0}
   playerBehaviour: {fileID: 0}
   bouncyAmmoBottlePrefab: {fileID: 1951289643424052, guid: 5ffdbec655313964e8bdf82b3d61ca55,
     type: 2}

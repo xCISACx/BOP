@@ -18,6 +18,11 @@ TagManager:
   - Speedy Ammo
   - Sticky Ammo
   - Clear Ammo
+  - Bouncy Meter
+  - Speedy Meter
+  - Sticky Meter
+  - Clear Meter
+  - Clear Puddle
   layers:
   - Default
   - TransparentFX
@@ -33,8 +38,8 @@ TagManager:
   - Enemy
   - Walls
   - Ground
-  - 
-  - 
+  - Sticky Puddle
+  - Clear Puddle
   - 
   - 
   - 

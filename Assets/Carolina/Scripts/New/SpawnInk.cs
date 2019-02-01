@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using TMPro;
 using UnityEngine.Tilemaps;
+using Random = UnityEngine.Random;
 
 public class SpawnInk : MonoBehaviour
 {
@@ -26,6 +27,7 @@ public class SpawnInk : MonoBehaviour
 	public GameObject inkPuddleBouncyPrefab;
 	public GameObject inkPuddleSpeedyPrefab;
 	public GameObject inkPuddleStickyPrefab;
+	public GameObject inkPuddleClearPrefab;
 	
 	public ParticleSystem PrS;
 	
@@ -33,16 +35,9 @@ public class SpawnInk : MonoBehaviour
 	
 	public AmmoType ammoType;
 	
-	public Texture2D AmmoBottleBackground;
-	public Texture2D BouncyAmmoBarTexture;
-	
-	public float BouncyAmmoBarLength;
-	
 	public bool playerHasUnlockedBouncy;
 	public bool playerHasUnlockedSpeedy;
 	public bool playerHasUnlockedSticky;
-	
-	//public GameObject ColourIndicator;
 	
 	public Color32 BouncyColour;
 	public Color32 SpeedyColour;
@@ -58,9 +53,9 @@ public class SpawnInk : MonoBehaviour
 	public Vector3 offsetY;
 	public Vector3 wallOffset;
 	
-	public GameObject GroundCheck;
 	public GameManager GM;
 	public PlayerBehaviour playerBehaviour;
+	public AmmoBehaviour ammoBehaviour;
 
 	// Use this for initialization
 	void Start()
@@ -71,6 +66,7 @@ public class SpawnInk : MonoBehaviour
 		collisionEvents = new List<ParticleCollisionEvent>();
 		settings = PrS.main;
 		settings.startColor = new ParticleSystem.MinMaxGradient(ClearColour);
+		ammoBehaviour = FindObjectOfType<AmmoBehaviour>();
 
 	}
 
@@ -89,10 +85,9 @@ public class SpawnInk : MonoBehaviour
 
 	void OnParticleCollision(GameObject other)
 	{
-		playerBehaviour.SpendAmmo(1);
-		Debug.Log("OnParticleCollision -> " + other);
+		ammoBehaviour.SpendAmmo(1);
+		//Debug.Log("OnParticleCollision -> " + other);
 		
-		if (other.CompareTag("Puddle") || other.gameObject.layer.ToString() == "Puddle") return;
 		if (other.CompareTag("Acid") || other.gameObject.layer.ToString() == "Acid") return;
 
 		int i = 0;
@@ -103,57 +98,58 @@ public class SpawnInk : MonoBehaviour
 			{
 				case AmmoType.Bouncy:
 				{
-					if (playerBehaviour.currentBouncyAmmo == 0)
-						return;
-					if (other.CompareTag("Ground") || other.gameObject.layer.ToString() == "Ground")
+					if (other.CompareTag("Ground") || other.gameObject.layer.ToString() == "Ground")   //if the bouncy ink is selected and the particles collide with the ground, instantiate a puddle of the correct type
 					{
-
 						Vector3 pos = collisionEvents[i].intersection;
 						GameObject newInkPuddle =
 							Instantiate(inkPuddleBouncyPrefab, pos + offsetY, Quaternion.identity);
-						newInkPuddle.transform.up = collisionEvents[i].normal;
+						newInkPuddle.transform.up = collisionEvents[i].normal; //transform the instantiated puddle so that it matches the surface it spawns on TODO:Fix the diagonal ink spawning.
 					}
 
-					if (other.CompareTag("Enemy") || other.gameObject.layer.ToString() == "Enemy")
+					if (other.CompareTag("Enemy") || other.gameObject.layer.ToString() == "Enemy") //if the particles hit an enemy...
 					{
-						var enemyStats = other.GetComponent<EnemyStats>();
-						enemyStats.ApplyDamage(1);
-						//other.gameObject.GetComponent<SpriteRenderer>().color = BouncyColour;
+						if (ammoBehaviour.currentBouncyAmmo == 0)
+							return; //do nothing if there's no ammo TODO: NOT WORKING, prevent ink from being spawned when there's no ammo.
+						
+						var enemyStats = other.GetComponent<EnemyStats>(); //get the Enemy Stats component of the specific enemy that we hit
+						enemyStats.ApplyDamage(1); //reduce the enemy's HP by 1
 						
 						
-						if (enemyStats.type == EnemyType.Bouncy)
+						if (enemyStats.type == EnemyType.Bouncy) //if the enemy hit is of the bouncy type...
 						{
-							Debug.Log("Enemy is already " + enemyStats.type);
-							return;
+							Debug.Log("Enemy is already " + enemyStats.type); 
+							return; //do nothing because it doesn't need to change type
 						}
 
 						
-						if (enemyStats.type == EnemyType.Speedy)
+						if (enemyStats.type == EnemyType.Speedy) //if the enemy hit is of the speedy type...
 						{
-							enemyStats.type = EnemyType.Sticky;
-							//other.gameObject.GetComponent<SpriteRenderer>().color = StickyColour;
+							enemyStats.type = EnemyType.Sticky; //change its type to sticky
 						}
 
-						if (enemyStats.type == EnemyType.Sticky)
+						if (enemyStats.type == EnemyType.Sticky) //if the enemy hit is of the sticky type...
 						{
-							return;
+							return; //do nothing because sticky can only be cleared with clear ink
 						}
 						
-						if (enemyStats.type == EnemyType.Clear)
+						if (enemyStats.type == EnemyType.Clear) //if the enemy hit is of the clear type...
 						{
-							enemyStats.type = EnemyType.Bouncy;
+							enemyStats.type = EnemyType.Bouncy; //change its type to bouncy
 							return;
 						}
 					}
+					
+					if (other.CompareTag("Puddle") || other.gameObject.layer.ToString() == "Puddle") return;
 
 					i++;
 					break;
 				}
 				case (AmmoType.Speedy):
 				{
-					if (playerBehaviour.currentSpeedyAmmo == 0)
+					if (ammoBehaviour.currentSpeedyAmmo == 0)
 						return;
-					if (other.CompareTag("Ground") || other.gameObject.layer.ToString() == "Ground")
+					
+					if (other.CompareTag("Ground") || other.gameObject.layer.ToString() == "Ground") //if the speedy ink is selected and the particles collide with the ground, instantiate a puddle of the correct type
 					{
 
 						Vector3 pos = collisionEvents[i].intersection;
@@ -162,47 +158,47 @@ public class SpawnInk : MonoBehaviour
 						newInkPuddle.transform.up = collisionEvents[i].normal;
 					}
 
-					if (other.CompareTag("Enemy") || other.gameObject.layer.ToString() == "Enemy")
+					if (other.CompareTag("Enemy") || other.gameObject.layer.ToString() == "Enemy") //if the particles hit an enemy...
 					{
 						var enemyStats = other.GetComponent<EnemyStats>();
 						enemyStats.ApplyDamage(1);
 						
-						if (enemyStats.type == EnemyType.Sticky)
+						if (enemyStats.type == EnemyType.Sticky) //if the enemy hit is of the sticky type...
 						{
 							Debug.Log("Enemy is already " + enemyStats.type + ", can't change it back.");
-							return;
+							return; //do nothing, sticky can only be cleared with clear ink
 						}
-						if (enemyStats.type == EnemyType.Speedy)
+						if (enemyStats.type == EnemyType.Speedy) //if the enemy hit is of the speedy type...
 						{
 							Debug.Log("Enemy is already " + enemyStats.type);
-							return;
+							return; //do nothing, it already is the correct type
 						}
-
 						Debug.Log(enemyStats.type);
 						
-						//other.gameObject.GetComponent<SpriteRenderer>().color = SpeedyColour;
-						
-						if (enemyStats.type == EnemyType.Bouncy)
+						if (enemyStats.type == EnemyType.Bouncy) //if the enemy hit is of the speedy type...
 						{
-							enemyStats.type = EnemyType.Sticky;
-							//other.gameObject.GetComponent<SpriteRenderer>().color = StickyColour;
+							enemyStats.type = EnemyType.Sticky; //change its type to sticky
 						}
-						else enemyStats.type = EnemyType.Speedy;
+						else enemyStats.type = EnemyType.Speedy; //if not, change it to speedy
 						
-						if (enemyStats.type == EnemyType.Clear)
+						
+						if (enemyStats.type == EnemyType.Clear) //if the enemy hit is of the clear type...
 						{
-							enemyStats.type = EnemyType.Speedy;
+							enemyStats.type = EnemyType.Speedy; //change its type to speedy
 						}
 					}
+					
+					if (other.CompareTag("Puddle") || other.gameObject.layer.ToString() == "Puddle") return;
 
 					i++;
 					break;
 				}
 				case (AmmoType.Sticky):
 				{
-					if (playerBehaviour.currentStickyAmmo == 0)
+					if (ammoBehaviour.currentStickyAmmo == 0)
 						return;
-					if (other.CompareTag("Ground") || other.gameObject.layer.ToString() == "Ground")
+					
+					if (other.CompareTag("Ground") || other.gameObject.layer.ToString() == "Ground") //if the sticky ink is selected and the particles collide with the ground, instantiate a puddle of the correct type
 					{
 
 						Vector3 pos = collisionEvents[i].intersection;
@@ -217,8 +213,6 @@ public class SpawnInk : MonoBehaviour
 						GameObject newInkPuddle =
 							Instantiate(inkPuddleStickyPrefab, pos + wallOffset, Quaternion.identity);
 						newInkPuddle.transform.up = collisionEvents[i].normal;
-						other.GetComponent<CompositeCollider2D>().sharedMaterial = StickyMaterial;
-						Debug.Log("Changing the wall material to sticky");
 					}
 
 					if (other.CompareTag("Enemy") || other.gameObject.layer.ToString() == "Enemy")
@@ -226,39 +220,35 @@ public class SpawnInk : MonoBehaviour
 						var enemyStats = other.GetComponent<EnemyStats>();
 						enemyStats.ApplyDamage(1);
 
-						//other.gameObject.GetComponent<SpriteRenderer>().color = StickyColour;
-						enemyStats.type = EnemyType.Sticky;
+						enemyStats.type = EnemyType.Sticky; //sticky overwrites every other type
 
 
-						if (enemyStats.type == EnemyType.Clear)
+						if (enemyStats.type == EnemyType.Clear) //if the enemy hit is of the clear type...
 						{
-							enemyStats.type = EnemyType.Sticky;
+							enemyStats.type = EnemyType.Sticky; //change its type to sticky
 							return;
 						}
 					}
+					
+					if (other.CompareTag("Puddle") || other.gameObject.layer.ToString() == "Puddle") return; //do not instantiate a puddle where there already is one TODO: NOT WORKING, fix this to improve performance.
 
 					i++;
 					break;
 				}
 				case (AmmoType.Clear):
-				{
-					if (playerBehaviour.currentClearAmmo == 0)
-						return;
-					if (other.CompareTag("Puddle") || other.gameObject.layer.ToString() == "Puddle")
+				{										
+					if (other.gameObject.CompareTag("Puddle") || other.gameObject.layer.ToString() == "Puddle" || other.gameObject.layer.ToString() == "Sticky Puddle")  //if we hit a puddle with the clear ink...
 					{
-
-						Vector3 pos = collisionEvents[i].intersection;
-						Destroy(other);
+						Destroy(other.gameObject); //destroy the puddle
 					}
 
-					if (other.CompareTag("Enemy") || other.gameObject.layer.ToString() == "Enemy")
+					if (other.CompareTag("Enemy") || other.gameObject.layer.ToString() == "Enemy") //if the particles hit an enemy...
 					{
 						var enemyStats = other.GetComponent<EnemyStats>();
 						
-						enemyStats.ApplyDamage(1);
+						enemyStats.ApplyDamage(1); //reduce the enemy's HP by 1
 						Debug.Log(enemyStats.type);
-						enemyStats.type = EnemyType.Clear;
-						//other.gameObject.GetComponent<SpriteRenderer>().color = ClearColour;
+						enemyStats.type = EnemyType.Clear; //change its type to clear
 					}
 
 					i++;
@@ -315,38 +305,29 @@ public class SpawnInk : MonoBehaviour
 			Debug.Log("Ammo type: " + ammoType);
 		}
 		
-		switch (ammoType)
+		switch (ammoType) //changes the colour of the particle system depending on the ammo type that is selected TODO: Not working correctly, colour isn't being set as the given colour,
+																												//TODO: possibly due to the particle system being cyan already.
 		{
 			case AmmoType.Bouncy:
-				//GM.AmmoLevelImage.color = BouncyColour;
-				//AmmoNameText.color = BouncyColour;
 				settings.startColor = new ParticleSystem.MinMaxGradient(BouncyColour);
 				break;
 			case AmmoType.Speedy:
-				//AmmoNameText.color = SpeedyColour;
 				settings.startColor = new ParticleSystem.MinMaxGradient(SpeedyColour);
-				//GM.AmmoLevelImage.color = SpeedyColour;
 				break;
 			case AmmoType.Sticky:
-				//AmmoNameText.color = StickyColour;
 				settings.startColor = new ParticleSystem.MinMaxGradient(StickyColour);
-				//GM.AmmoLevelImage.color = StickyColour;
 				break;
 			case AmmoType.Clear:
-				//AmmoNameText.color = ClearColour;
 				settings.startColor = new ParticleSystem.MinMaxGradient(ClearColour);
-				//GM.AmmoLevelImage.color = ClearColour;
 				break;
 		}
 	}
 
-	void AmmoCount()
+	void AmmoCount() //TODO: Make it work for all the ammo types.
 	{
-		if (playerBehaviour.currentBouncyAmmo <= playerBehaviour.maxBouncyAmmo)
+		if (ammoBehaviour.currentBouncyAmmo <= ammoBehaviour.maxBouncyAmmo) //if the current bouncy ammo is lesser than/equal to the max bouncy ammo...
 		{
-			playerBehaviour.bouncyAmmoPercent = playerBehaviour.currentBouncyAmmo/playerBehaviour.maxBouncyAmmo;
-			//BouncyAmmoBarLength = (BouncyAmmoPercent * 50);
-			//AmmoAmountText.text = "" + CurrentBouncyAmmo + " / " + MaxBouncyAmmo;
+			ammoBehaviour.bouncyAmmoPercent = ammoBehaviour.currentBouncyAmmo/ammoBehaviour.maxBouncyAmmo; //the percentage of bouncy ammo will be the current bouncy ammo divided by the max ammo.
 		}
 	}
 }
