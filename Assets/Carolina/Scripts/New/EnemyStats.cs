@@ -21,23 +21,33 @@ public class EnemyStats : MonoBehaviour
 	
 	public float invulTime;
 
+	public EnemySpawner spawner;
+
 	public Texture2D HPTickTexture;
 
+	public SpawnInk.EnemyType type;
 
 	// Use this for initialization
 	void Start ()
 	{
-		// spawnInk = GameObject.Find("InkSpray").GetComponent<SpawnInk>();
-		spawnAmmo = GameObject.Find("SpawnPoint").GetComponent<SpawnAmmo>();
+		spawnInk = GameObject.Find("InkSpray").GetComponent<SpawnInk>();
+		spawnAmmo = GetComponent<SpawnAmmo>();
 		if (spawnAmmo == null)
 		{
 			Debug.Log("Couldn't find spawn ammo script");
 		}
+		ChangeColour(type);
 	}
 
 	private void Update()
 	{
-		//ChangeColour();
+		spawnInk = GameObject.Find("InkSpray").GetComponent<SpawnInk>();
+		spawnAmmo = GetComponent<SpawnAmmo>();
+		if (spawnAmmo == null)
+		{
+			Debug.Log("Couldn't find spawn ammo script");
+		}
+		ChangeColour(type);
 		Death();
 	}
 
@@ -47,9 +57,9 @@ public class EnemyStats : MonoBehaviour
 		Type = spawnInk.enemyType;
 	}*/
 
-	void ChangeColour()
+	void ChangeColour(SpawnInk.EnemyType Type)
 	{
-		switch (spawnInk.enemyType)
+		switch (Type)
 		{
 			case SpawnInk.EnemyType.Bouncy:
 				gameObject.transform.GetComponent<SpriteRenderer>().color = spawnInk.BouncyColour;
@@ -87,7 +97,7 @@ public class EnemyStats : MonoBehaviour
 		if (enemyHP <= 0)
 		{
 			spawnAmmo.TypeCheck();
-			EnemySpawner.Instance.StartCooldownTimer();
+			spawner.StartCooldownTimer();
 			Destroy(gameObject);
 		}
 	}

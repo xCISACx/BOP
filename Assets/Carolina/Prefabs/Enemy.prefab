@@ -24,6 +24,7 @@ GameObject:
   - component: {fileID: 50364812809959010}
   - component: {fileID: 61200717865414392}
   - component: {fileID: 114533906073377728}
+  - component: {fileID: 114866544486666802}
   m_Layer: 11
   m_Name: Enemy
   m_TagString: Enemy
@@ -121,10 +122,31 @@ MonoBehaviour:
   enemyHP: 3
   spawnInk: {fileID: 0}
   spawnAmmo: {fileID: 0}
-  enemyDamaged: 0
   canBeDamaged: 1
   invulTime: 2
   HPTickTexture: {fileID: 2800000, guid: ee874109ca334dd4a86c241301958454, type: 3}
+--- !u!114 &114866544486666802
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1783564496363834}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f37367f883c05548bc66fe8d6b60631, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  spawnInk: {fileID: 0}
+  playerBehaviour: {fileID: 0}
+  bouncyAmmoBottlePrefab: {fileID: 1951289643424052, guid: 5ffdbec655313964e8bdf82b3d61ca55,
+    type: 2}
+  speedyAmmoBottlePrefab: {fileID: 1396619643128898, guid: 8e674cd97a29fa646bb90cbad9ec3fed,
+    type: 2}
+  stickyAmmoBottlePrefab: {fileID: 1390205774773286, guid: 5a867d75608ba2e42ac318b3c509bf51,
+    type: 2}
+  clearAmmoBottlePrefab: {fileID: 1092778667061954, guid: 1c6df63356d168e418cdb68e08870284,
+    type: 2}
+  offsetY: {x: 0, y: 0.5, z: 0}
 --- !u!212 &212292462781531610
 SpriteRenderer:
   m_ObjectHideFlags: 1

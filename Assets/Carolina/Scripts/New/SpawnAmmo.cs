@@ -4,7 +4,8 @@ using UnityEngine;
 
 public class SpawnAmmo : MonoBehaviour {
 	
-	public SpawnInk spawnInk;
+	public EnemyStats enemyStats;
+	public PlayerBehaviour playerBehaviour;
 	public GameObject bouncyAmmoBottlePrefab;
 	public GameObject speedyAmmoBottlePrefab;
 	public GameObject stickyAmmoBottlePrefab;
@@ -14,19 +15,23 @@ public class SpawnAmmo : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
 	{
-
-		spawnInk = GameObject.Find("InkSpray").GetComponent<SpawnInk>();
+		playerBehaviour = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerBehaviour>();
+		//if (playerBehaviour.uiActive)
+			enemyStats = GetComponent<EnemyStats>();
 
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		
+		playerBehaviour = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerBehaviour>();
+		
+		
 	}
 
 	public void TypeCheck()
 	{
-		switch (spawnInk.enemyType)
+		switch (enemyStats.type)
 		{
 			case SpawnInk.EnemyType.Bouncy:
 				Instantiate(bouncyAmmoBottlePrefab, transform.position + offsetY, Quaternion.identity);

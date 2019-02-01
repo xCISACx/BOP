@@ -32,7 +32,6 @@ public class SpawnInk : MonoBehaviour
 	public List<ParticleCollisionEvent> collisionEvents;
 	
 	public AmmoType ammoType;
-	public EnemyType enemyType;
 	
 	public Texture2D AmmoBottleBackground;
 	public Texture2D BouncyAmmoBarTexture;
@@ -80,6 +79,7 @@ public class SpawnInk : MonoBehaviour
 	{
 		GM = GameObject.Find("GameManager").GetComponent<GameManager>();
 		PrS = GameObject.Find("InkSpray").GetComponent<ParticleSystem>();
+		playerBehaviour = GameObject.FindGameObjectWithTag("Player").GetComponent<PlayerBehaviour>();
 		collisionEvents = new List<ParticleCollisionEvent>();
 		settings = PrS.main;
 		settings.startColor = new ParticleSystem.MinMaxGradient(ClearColour);
@@ -117,32 +117,31 @@ public class SpawnInk : MonoBehaviour
 					if (other.CompareTag("Enemy") || other.gameObject.layer.ToString() == "Enemy")
 					{
 						var enemyStats = other.GetComponent<EnemyStats>();
-						
 						enemyStats.ApplyDamage(1);
-						other.gameObject.GetComponent<SpriteRenderer>().color = BouncyColour;
+						//other.gameObject.GetComponent<SpriteRenderer>().color = BouncyColour;
 						
 						
-						if (enemyType == EnemyType.Bouncy)
+						if (enemyStats.type == EnemyType.Bouncy)
 						{
-							Debug.Log("Enemy is already " + enemyType);
+							Debug.Log("Enemy is already " + enemyStats.type);
 							return;
 						}
 
 						
-						if (enemyType == EnemyType.Speedy)
+						if (enemyStats.type == EnemyType.Speedy)
 						{
-							enemyType = EnemyType.Sticky;
-							other.gameObject.GetComponent<SpriteRenderer>().color = StickyColour;
+							enemyStats.type = EnemyType.Sticky;
+							//other.gameObject.GetComponent<SpriteRenderer>().color = StickyColour;
 						}
 
-						if (enemyType == EnemyType.Sticky)
+						if (enemyStats.type == EnemyType.Sticky)
 						{
 							return;
 						}
 						
-						if (enemyType == EnemyType.Clear)
+						if (enemyStats.type == EnemyType.Clear)
 						{
-							enemyType = EnemyType.Bouncy;
+							enemyStats.type = EnemyType.Bouncy;
 							return;
 						}
 					}
@@ -166,34 +165,33 @@ public class SpawnInk : MonoBehaviour
 					if (other.CompareTag("Enemy") || other.gameObject.layer.ToString() == "Enemy")
 					{
 						var enemyStats = other.GetComponent<EnemyStats>();
-						
 						enemyStats.ApplyDamage(1);
 						
-						if (enemyType == EnemyType.Sticky)
+						if (enemyStats.type == EnemyType.Sticky)
 						{
-							Debug.Log("Enemy is already " + enemyType + ", can't change it back.");
+							Debug.Log("Enemy is already " + enemyStats.type + ", can't change it back.");
 							return;
 						}
-						if (enemyType == EnemyType.Speedy)
+						if (enemyStats.type == EnemyType.Speedy)
 						{
-							Debug.Log("Enemy is already " + enemyType);
+							Debug.Log("Enemy is already " + enemyStats.type);
 							return;
 						}
 
-						Debug.Log(enemyType);
+						Debug.Log(enemyStats.type);
 						
-						other.gameObject.GetComponent<SpriteRenderer>().color = SpeedyColour;
-						if (enemyType == EnemyType.Bouncy)
+						//other.gameObject.GetComponent<SpriteRenderer>().color = SpeedyColour;
+						
+						if (enemyStats.type == EnemyType.Bouncy)
 						{
-							enemyType = EnemyType.Sticky;
-							other.gameObject.GetComponent<SpriteRenderer>().color = StickyColour;
+							enemyStats.type = EnemyType.Sticky;
+							//other.gameObject.GetComponent<SpriteRenderer>().color = StickyColour;
 						}
-						else enemyType = EnemyType.Speedy;
+						else enemyStats.type = EnemyType.Speedy;
 						
-						if (enemyType == EnemyType.Clear)
+						if (enemyStats.type == EnemyType.Clear)
 						{
-							enemyType = EnemyType.Speedy;
-							return;
+							enemyStats.type = EnemyType.Speedy;
 						}
 					}
 
@@ -226,17 +224,17 @@ public class SpawnInk : MonoBehaviour
 					if (other.CompareTag("Enemy") || other.gameObject.layer.ToString() == "Enemy")
 					{
 						var enemyStats = other.GetComponent<EnemyStats>();
-						
 						enemyStats.ApplyDamage(1);
 
-						other.gameObject.GetComponent<SpriteRenderer>().color = StickyColour;
-						enemyType = EnemyType.Sticky;
-					}
-					
-					if (enemyType == EnemyType.Clear)
-					{
-						enemyType = EnemyType.Sticky;
-						return;
+						//other.gameObject.GetComponent<SpriteRenderer>().color = StickyColour;
+						enemyStats.type = EnemyType.Sticky;
+
+
+						if (enemyStats.type == EnemyType.Clear)
+						{
+							enemyStats.type = EnemyType.Sticky;
+							return;
+						}
 					}
 
 					i++;
@@ -258,9 +256,9 @@ public class SpawnInk : MonoBehaviour
 						var enemyStats = other.GetComponent<EnemyStats>();
 						
 						enemyStats.ApplyDamage(1);
-						
-						Debug.Log(enemyType);
-						other.gameObject.GetComponent<SpriteRenderer>().color = ClearColour;
+						Debug.Log(enemyStats.type);
+						enemyStats.type = EnemyType.Clear;
+						//other.gameObject.GetComponent<SpriteRenderer>().color = ClearColour;
 					}
 
 					i++;

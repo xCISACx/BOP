@@ -5,15 +5,10 @@ using System.Linq;
 
 public class EnemySpawner : MonoBehaviour
 {
-
-	public static EnemySpawner Instance;
 	
 	private bool _isCooldownTimerRunning = false;
 	
 	public float spawnCooldown;
-	public Transform spawnpointsParent;
-	private Transform[] spawnpoints;
-	private int targetSpawnpointIndex = 0;
 	private Transform targetSpawnpoint;
 	public GameObject enemyPrefab;
 	private Vector3 pos;
@@ -23,16 +18,7 @@ public class EnemySpawner : MonoBehaviour
 	// Use this for initialization
 	void Start ()
 	{
-	
-		Instance = this;
 
-		spawnpoints = spawnpointsParent.GetComponentsInChildren<Transform>().Skip(1).ToArray();
-
-		if (spawnpoints.Length == 0)
-		{
-			Debug.LogError("There are no spawn points!");
-		}
-		else Debug.Log("Found " + spawnpoints.Length + " spawn points.");	
 	}
 	
 	// Update is called once per frame
@@ -57,7 +43,9 @@ public class EnemySpawner : MonoBehaviour
 	public void SpawnEnemy()
 	{
 		var newEnemy = Instantiate(enemyPrefab, transform.position, Quaternion.identity);
-		newEnemy.name = "Spawned Enemy " + targetSpawnpointIndex;
+		newEnemy.name = "Spawned Enemy ";
+		newEnemy.GetComponent<EnemyStats>().spawner = this;
+		newEnemy.GetComponent<EnemyStats>().type = enemySpawnType;
 	}
 
 	public void StartCooldownTimer()

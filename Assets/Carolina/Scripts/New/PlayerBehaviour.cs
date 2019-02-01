@@ -91,7 +91,8 @@ public class PlayerBehaviour : MonoBehaviour {
         canReduceAmmo = true;
         playerScale = Player.transform.lossyScale;
         anim = GetComponent<Animator>();
-        SI = GameObject.Find("InkSpray").GetComponent<SpawnInk>();
+        if (uiActive)
+            SI = GameObject.Find("InkSpray").GetComponent<SpawnInk>();
         Player = GameObject.FindGameObjectWithTag("Player");
         gameManager = GameObject.FindGameObjectWithTag("GM").GetComponent<GameManager>();
         groundCheck = GameObject.Find("Ground Check").transform;
@@ -111,6 +112,10 @@ public class PlayerBehaviour : MonoBehaviour {
 	        Debug.Log("Ground Check not found");
 	    }
 	    isGrounded = Physics2D.Linecast(transform.position, groundCheck.position, layerGround);
+	    if (uiActive)
+	    {
+	        
+	    }
         Aiming();
 	    AmmoLimiter();
 	    if (Input.GetKeyDown(KeyCode.Space))
@@ -153,6 +158,7 @@ public class PlayerBehaviour : MonoBehaviour {
                 Player.transform.localScale = new Vector3(-playerScale.x, playerScale.y, playerScale.z); // spritePlayer.flipX = false;
                 facingRight = false;
             }
+            
             
             if (horAxis < 0.05 || horAxis > -0.05)
             {
@@ -256,14 +262,6 @@ public class PlayerBehaviour : MonoBehaviour {
             {
                 rb.drag = 0.5f;
             }
-            
-            if (other.gameObject.CompareTag("Puddle") || other.gameObject.layer.ToString() == "Puddle")
-            {
-                if (other.gameObject.GetComponent<BoxCollider2D>().sharedMaterial == SI.StickyMaterial)
-                {
-                    touchingSticky = true;
-                }
-            }
         }
         
         /*if (other.gameObject.CompareTag("Ground") || other.gameObject.layer.ToString() == "Ground" || other.gameObject.CompareTag("Puddle") || other.gameObject.layer.ToString() == "Puddle")
@@ -284,13 +282,7 @@ public class PlayerBehaviour : MonoBehaviour {
 
     private void OnCollisionExit2D(Collision2D other)
     {
-        if (other.gameObject.CompareTag("Puddle") || other.gameObject.layer.ToString() == "Puddle")
-        {
-            if (other.gameObject.GetComponent<BoxCollider2D>().sharedMaterial == SI.StickyMaterial)
-            {
-                touchingSticky = false;
-            }
-        }
+        touchingSticky = false;
     }
 
     private void OnTriggerEnter2D(Collider2D other)
@@ -300,37 +292,14 @@ public class PlayerBehaviour : MonoBehaviour {
             isGrounded = false;
             gameManager.KillPlayer();
         }
-        
-        if (other.gameObject.CompareTag("Puddle") || other.gameObject.layer.ToString() == "Puddle")
-        {
-            if (other.gameObject.GetComponent<BoxCollider2D>().sharedMaterial == SI.StickyMaterial)
-            {
-                touchingSticky = true;
-                //rb.velocity = Vector3.zero;
-            }
-        }
     }
     
     private void OnTriggerExit2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("Puddle") || other.gameObject.layer.ToString() == "Puddle")
-        {
-            if (other.gameObject.GetComponent<BoxCollider2D>().sharedMaterial == SI.StickyMaterial)
-            {
-                touchingSticky = false;
-            }
-        }
     }
     
     private void OnTriggerStay2D(Collider2D other)
     {
-        if (other.gameObject.CompareTag("Puddle") || other.gameObject.layer.ToString() == "Puddle")
-        {
-            if (other.gameObject.GetComponent<BoxCollider2D>().sharedMaterial == SI.StickyMaterial)
-            {
-                touchingSticky = true;
-            }
-        }
     }
 
     public void onHover(Ray ray, RaycastHit2D hit)
@@ -351,7 +320,7 @@ public class PlayerBehaviour : MonoBehaviour {
         if (touchingWall && touchingSticky)
         {
             float slidingVelocity = -1f;
-            rb.velocity = (new Vector2(slidingVelocity, 0f));
+            //rb.velocity = (new Vector2(slidingVelocity, 0f));
 
             Debug.Log("Stage1: touching sticky wall, sliding down");
             if ((horAxis > 0.0f && facingRight && !isGrounded) || (horAxis < 0.0f && !facingRight && !isGrounded))
@@ -361,15 +330,15 @@ public class PlayerBehaviour : MonoBehaviour {
                     if (facingRight)
                     {
                         Debug.Log("Wall jumping to the left");
-                        rb.AddForce(playerWallJumpPower, ForceMode2D.Impulse);
-                        Player.transform.localScale = new Vector3(-playerScale.x, playerScale.y, playerScale.z);
+                        rb.AddForce(playerWallJumpPower, ForceMode2D.Force);
+                        //Player.transform.localScale = new Vector3(-playerScale.x, playerScale.y, playerScale.z);
                     }
                     else
                     {
                         Debug.Log("Wall jumping to the right");
-                        playerWallJumpPower.x = -playerWallJumpPower.x;
-                        rb.AddForce(playerWallJumpPower, ForceMode2D.Impulse);
-                        Player.transform.localScale = new Vector3(playerScale.x, playerScale.y, playerScale.z);
+                        //playerWallJumpPower.x = -playerWallJumpPower.x;
+                        rb.AddForce( new Vector2(-playerWallJumpPower.x,playerWallJumpPower.y), ForceMode2D.Force);
+                        //Player.transform.localScale = new Vector3(playerScale.x, playerScale.y, playerScale.z);
                     }
                 }
             }
@@ -384,7 +353,7 @@ public class PlayerBehaviour : MonoBehaviour {
                 if (canReduceAmmo)
                 {
                     currentBouncyAmmo -= ammo;
-                    if (currentBouncyAmmo != null)
+                    if (currentBouncyAmmo != 0)
                     {
                         gameManager.ReduceAmmoBar();   
                     }
@@ -395,7 +364,7 @@ public class PlayerBehaviour : MonoBehaviour {
                 if (canReduceAmmo)
                 {
                     currentSpeedyAmmo -= ammo;
-                    if (currentSpeedyAmmo != null)
+                    if (currentSpeedyAmmo != 0)
                     {
                         gameManager.ReduceAmmoBar();   
                     }
@@ -406,7 +375,7 @@ public class PlayerBehaviour : MonoBehaviour {
                 if (canReduceAmmo)
                 {
                     currentStickyAmmo -= ammo;
-                    if (currentStickyAmmo != null)
+                    if (currentStickyAmmo != 0)
                     {
                         gameManager.ReduceAmmoBar();   
                     }
@@ -417,7 +386,7 @@ public class PlayerBehaviour : MonoBehaviour {
                 if (canReduceAmmo)
                 {
                     currentClearAmmo -= ammo;
-                    if (currentClearAmmo != null)
+                    if (currentClearAmmo != 0)
                     {
                         gameManager.ReduceAmmoBar();   
                     }
@@ -444,6 +413,14 @@ public class PlayerBehaviour : MonoBehaviour {
             currentStickyAmmo = 0;
         if (currentClearAmmo < 0)
             currentClearAmmo = 0;
+        if (currentBouncyAmmo > maxBouncyAmmo)
+            currentBouncyAmmo = maxBouncyAmmo;
+        if (currentSpeedyAmmo > maxBouncyAmmo)
+            currentSpeedyAmmo = maxBouncyAmmo;
+        if (currentStickyAmmo > maxBouncyAmmo)
+            currentStickyAmmo = maxBouncyAmmo;
+        if (currentClearAmmo > maxBouncyAmmo)
+            currentClearAmmo = maxBouncyAmmo;
     }
 
     public void NoAmmo()

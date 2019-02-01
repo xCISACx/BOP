@@ -31,7 +31,7 @@ public class GunInteraction : MonoBehaviour
 				GunObtainedCanvas.SetActive(true);
 				Debug.Log("Obtained the gun.");
 				gunStandInstance.SetActive(false);
-				PlayerFirePoint.SetActive(true);
+				PlayerFirePoint.GetComponent<SpriteRenderer>().enabled = true;
 				BedroomDoorTilemap.ClearAllTiles();
 				UI.SetActive(true);
 				PlayerBehaviour.uiActive = true;
