@@ -15,7 +15,6 @@ public class EnemyStats : MonoBehaviour
 
 	[Header("Conditions")]
 	
-	public bool enemyDamaged = false;
 	public bool canBeDamaged = true;
 
 	[Header("Timers")]

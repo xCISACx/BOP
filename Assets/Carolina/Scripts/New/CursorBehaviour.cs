@@ -15,10 +15,16 @@ internal class CursorBehaviour : MonoBehaviour
     {
         
     }
-    
+
     private void Update()
     {
+        _weaponArm = GameObject.Find("Arm Socket").transform;
         UpdateCursor();
+        if (_weaponArm == null)
+        {
+            Debug.Log("Couldn't find weapon arm");
+        }
+        _activeCursor = GameObject.Find("Cursor").GetComponent<Image>();
     }
 
     private void UpdateCursor()

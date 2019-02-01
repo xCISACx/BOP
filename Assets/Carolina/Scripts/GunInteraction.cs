@@ -6,14 +6,12 @@ using UnityEngine.Tilemaps;
 
 public class GunInteraction : MonoBehaviour
 {
-
-	public FireBehaviour FB;
 	public GameObject gunStandInstance;
 	public GameObject player;
 	public Tilemap BedroomDoorTilemap;
 	public GameObject UI;
-	public InkBehaviour IB;
-	public PlayerStats PS;
+	public SpawnInk spawnInk;
+	public PlayerBehaviour PlayerBehaviour;
 	public GameObject GunObtainedCanvas;
 	public GameObject PlayerFirePoint;
 
@@ -24,20 +22,20 @@ public class GunInteraction : MonoBehaviour
 
 	private void OnTriggerStay2D(Collider2D other)
 	{
-		if (other.gameObject.tag == "Player")
+		if (other.gameObject.CompareTag("Player"))
 		{
 			Debug.Log("Collided with the player.");
-			if (Input.GetKey(KeyCode.Z))
+			if (Input.GetKey(KeyCode.LeftControl))
 			{
-				FB.playerHasGun = true;
+				PlayerBehaviour.playerHasGun = true;
 				GunObtainedCanvas.SetActive(true);
 				Debug.Log("Obtained the gun.");
 				gunStandInstance.SetActive(false);
 				PlayerFirePoint.SetActive(true);
 				BedroomDoorTilemap.ClearAllTiles();
 				UI.SetActive(true);
-				PS.UIisActive = true;
-				PS.playerHasUnlockedBouncy = true;
+				PlayerBehaviour.uiActive = true;
+				spawnInk.playerHasUnlockedBouncy = true;
 				Debug.Log("Unlocked the Bouncy ammo!");
 			}	
 		}
@@ -46,10 +44,9 @@ public class GunInteraction : MonoBehaviour
 	// Update is called once per frame
 	void Update () {
 
-		if (PS.UIisActive)
+		if (PlayerBehaviour.uiActive)
 		{
 			UI.SetActive(true);
-		}
-		
+		}		
 	}
 }

@@ -11,6 +11,9 @@ TagManager:
   - Acid
   - Enemy
   - GM
+  - Walls
+  - Arm Socket
+  - UI
   layers:
   - Default
   - TransparentFX
@@ -24,8 +27,8 @@ TagManager:
   - Acid
   - Forbidden
   - Enemy
-  - 
-  - 
+  - Walls
+  - Ground
   - 
   - 
   - 
