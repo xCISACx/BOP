@@ -619,9 +619,9 @@ PlayerSettings:
     UNet: 1
   facebookSdkVersion: 7.9.4
   apiCompatibilityLevel: 2
-  cloudProjectId: 339c206b-fdb6-4bec-9d59-df3de391e673
+  cloudProjectId: 736483b1-c978-4294-a43e-b389b5411c6c
   projectName: BOP
-  organizationId: valtermedeiros
+  organizationId: cisac
   cloudEnabled: 0
   enableNativePlatformBackendsForNewInputSystem: 0
   disableOldInputManagerSupport: 0
